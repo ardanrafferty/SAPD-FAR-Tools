@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAPD FAR Tools</title>
+<link rel="icon" type="image/png" href="sapdmed.png">
+
+<style>
+    body {
+        background-color: #1b2a41;
+        color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    header {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    header img {
+        width: 120px;
+        height: auto;
+        display: block;
+        margin: 0 auto 10px auto;
+    }
+
+    h1 {
+        font-size: 22px;
+        font-weight: 600;
+        color: #cfd8e3;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 900px;
+        background: #22334d;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        margin-bottom: 30px;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        border: none;
+        margin-top: 5px;
+        background: #2e4465;
+        color: #fff;
+    }
+
+    button {
+        background: #5c8df6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    button:hover {
+        background: #4a7ce6;
+    }
+
+    .remove-btn {
+        background: #d9534f;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-top: 5px;
+        margin-left: 5px;
+        transition: background 0.3s;
+    }
+
+    .remove-btn:hover {
+        background: #c9302c;
+    }
+
+    textarea {
+        width: 100%;
+        height: 200px;
+        margin-top: 10px;
+        padding: 10px;
+        background: #162235;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        resize: none;
+    }
+
+    .ticket-box, .activity-box {
+        margin-top: 10px;
+        padding: 10px;
+        background: #2a3b59;
+        border-radius: 6px;
+        position: relative;
+    }
+
+    footer {
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+        color: #aab7cf;
+        opacity: 0.8;
+    }
+
+    footer:hover {
+        opacity: 1;
+        transition: 0.3s;
+    }
+
+    .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <img src="sapdmed.png" alt="SAPD Logo">
+    <h1>San Andreas Police Department<br>Field Activity Report Tools</h1>
+</header>
+
+<div class="container">
+    <h3>Officer Information</h3>
+    <label>Full Name</label>
+    <input type="text" id="fullname" placeholder="Example: Cameron Alfonso">
+
+    <label>Rank</label>
+    <input type="text" id="rank" placeholder="Example: Police Officer II">
+
+    <label>Month</label>
+    <select id="month">
+        <option>January</option><option>February</option><option>March</option><option>April</option>
+        <option>May</option><option>June</option><option>July</option><option>August</option>
+        <option>September</option><option>October</option><option>November</option><option>December</option>
+    </select>
+
+    <label>Week</label>
+    <select id="week">
+        <option>Week 1</option><option>Week 2</option><option>Week 3</option><option>Week 4</option>
+    </select>
+
+    <h3>Activity Logs</h3>
+    <div id="activityContainer"></div>
+
+    <div class="btn-row">
+        <button onclick="addActivity()">+ Add Activity</button>
+        <button onclick="addTicket()">+ Add Ticket</button>
+        <button onclick="generateBBCode()">Generate BBCode</button>
+        <button onclick="copyBBCode()">Copy to Clipboard</button>
+    </div>
+
+    <textarea id="output" placeholder="Your BBCode will appear here..."></textarea>
+</div>
+
+<footer>
+    © 2025 SAPD FAR Tools – Created by Ardan Rafferty 🜲
+</footer>
+
+<script>
+    function addActivity() {
+        const container = document.getElementById('activityContainer');
+        const div = document.createElement('div');
+        div.classList.add('activity-box');
+        div.innerHTML = `
+            <input type="text" placeholder="Example: Case #421 - OIS - Cameron Alfonso - 30/10/2025 - UFJ - Daniello Gustavo">
+            <input type="text" placeholder="Activity Link">
+            <button class="remove-btn" onclick="removeBox(this)">Remove</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function addTicket() {
+        const container = document.getElementById('activityContainer');
+        const div = document.createElement('div');
+        div.classList.add('ticket-box');
+        div.innerHTML = `
+            <input type="text" placeholder="Name">
+            <input type="text" placeholder="Date (Example: 30/10/2025)">
+            <input type="text" placeholder="Violation">
+            <input type="number" placeholder="Fine (Number Only)">
+            <input type="text" placeholder="Link Ticket Image">
+            <button class="remove-btn" onclick="removeBox(this)">Remove</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function removeBox(button) {
+        button.parentElement.remove();
+    }
+
+    function generateBBCode() {
+        const fullname = document.getElementById('fullname').value;
+        const rank = document.getElementById('rank').value;
+        const month = document.getElementById('month').value;
+        const week = document.getElementById('week').value;
+
+        const boxes = document.getElementById('activityContainer').children;
+        let activityList = "";
+
+        for (let box of boxes) {
+            const inputs = box.getElementsByTagName('input');
+
+            if (box.classList.contains('activity-box')) {
+                const title = inputs[0].value;
+                const link = inputs[1].value;
+                if (title) {
+                    activityList += link 
+                        ? `[url=${link}]${title}[/url]\n`
+                        : `[url]${title}[/url]\n`;
+                }
+            }
+
+            if (box.classList.contains('ticket-box')) {
+                const name = inputs[0].value;
+                const date = inputs[1].value;
+                const violation = inputs[2].value;
+                const fine = inputs[3].value;
+                const link = inputs[4].value;
+                if (name && date && violation && fine) {
+                    activityList += link 
+                        ? `[url=${link}][TICKET] ${name} - ${date} - ${violation} - $${fine}[/url]\n`
+                        : `[url][TICKET] ${name} - ${date} - ${violation} - $${fine}[/url]\n`;
+                }
+            }
+        }
+
+        const bbcode = `[divbox=transparent][center][list][/list][img]https://i.imgur.com/2Zt5baY.png[/img]
+[size=95]
+San Andreas Police Department
+Daily Operations Bureau 
+[b]Field Activity Report ${month} ${week}[/b][/size][/center]
+
+
+[img]https://i.imgur.com/O5nC1RX.png[/img]
+[size=85.5][b]OFFICER INFORMATION[/b][/size]
+[img]https://i.imgur.com/O5nC1RX.png[/img]
+
+Fullname: ${fullname}
+Rank: ${rank}
+
+
+[img]https://i.imgur.com/O5nC1RX.png[/img]
+[size=85.5][b]ACTIVITY LOGS[/b][/size]
+[img]https://i.imgur.com/O5nC1RX.png[/img]
+${activityList}
+[/divbox]`;
+
+        document.getElementById('output').value = bbcode;
+    }
+
+    function copyBBCode() {
+        const textarea = document.getElementById('output');
+        textarea.select();
+        document.execCommand('copy');
+        alert('✅ BBCode copied to clipboard!');
+    }
+</script>
+
+</body>
+</html>
